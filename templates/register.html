@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Register - Clininfo</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+
+    <!-- Logo / Header -->
+
+    <div class="sm:mx-auto sm:w-full sm:max-w-md text-center">
+
+        <a href="/" class="inline-flex items-center gap-2 text-2xl font-bold text-blue-600">
+
+            <i data-lucide="activity" class="w-8 h-8"></i>
+
+            <span>Clininfo</span>
+
+        </a>
+
+
+        <h2 class="mt-4 text-2xl font-bold text-slate-900">
+            Create your account
+        </h2>
+
+
+        <p class="mt-1 text-sm text-slate-600">
+
+            Already registered?
+
+            <a href="/login" class="font-medium text-blue-600 hover:underline">
+                Sign in here
+            </a>
+
+        </p>
+
+    </div>
+
+
+
+    <!-- Registration Card -->
+
+    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+
+        <div class="bg-white py-8 px-6 shadow border border-slate-200 rounded-xl sm:px-10">
+
+
+            <!-- Error Alert -->
+
+            <div
+                id="error-alert"
+                class="hidden mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg flex items-center gap-2">
+
+                <i
+                    data-lucide="alert-circle"
+                    class="w-4 h-4 shrink-0">
+                </i>
+
+                <span id="error-message"></span>
+
+            </div>
+
+
+
+            <!-- Registration Form -->
+
+            <form id="register-form" class="space-y-4">
+
+
+                <!-- Account Role -->
+
+                <div>
+
+                    <label
+                        for="role"
+                        class="block text-xs font-semibold uppercase text-slate-500 mb-1">
+
+                        Account Role
+
+                    </label>
+
+
+                    <select
+                        id="role"
+                        class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+
+                        <option value="patient">
+                            Patient
+                        </option>
+
+                        <option value="doctor">
+                            Doctor / Medical Staff
+                        </option>
+
+                        <option value="admin">
+                            Clinic Admin
+                        </option>
+
+                        <option value="ambulance_driver">
+                            Ambulance Driver
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- Full Name -->
+
+                <div>
+
+                    <label
+                        for="fullName"
+                        class="block text-xs font-semibold uppercase text-slate-500 mb-1">
+
+                        Full Name
+
+                    </label>
+
+
+                    <div class="relative">
+
+                        <i
+                            data-lucide="user"
+                            class="w-4 h-4 text-slate-400 absolute left-3 top-3.5">
+                        </i>
+
+
+                        <input
+                            type="text"
+                            id="fullName"
+                            required
+                            placeholder="John Doe"
+                            class="w-full border border-slate-300 rounded-lg pl-9 p-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Email -->
+
+                <div>
+
+                    <label
+                        for="email"
+                        class="block text-xs font-semibold uppercase text-slate-500 mb-1">
+
+                        Email Address
+
+                    </label>
+
+
+                    <div class="relative">
+
+                        <i
+                            data-lucide="mail"
+                            class="w-4 h-4 text-slate-400 absolute left-3 top-3.5">
+                        </i>
+
+
+                        <input
+                            type="email"
+                            id="email"
+                            required
+                            placeholder="john@example.com"
+                            class="w-full border border-slate-300 rounded-lg pl-9 p-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Phone + Blood Group -->
+
+                <div class="grid grid-cols-2 gap-3">
+
+
+                    <!-- Phone -->
+
+                    <div>
+
+                        <label
+                            for="phone"
+                            class="block text-xs font-semibold uppercase text-slate-500 mb-1">
+
+                            Phone
+
+                        </label>
+
+
+                        <div class="relative">
+
+                            <i
+                                data-lucide="phone"
+                                class="w-4 h-4 text-slate-400 absolute left-3 top-3.5">
+                            </i>
+
+
+                            <input
+                                type="tel"
+                                id="phone"
+                                required
+                                placeholder="+1234567890"
+                                class="w-full border border-slate-300 rounded-lg pl-9 p-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Blood Group -->
+
+                    <div id="blood-group-container">
+
+                        <label
+                            for="bloodGroup"
+                            class="block text-xs font-semibold uppercase text-slate-500 mb-1">
+
+                            Blood Group
+
+                        </label>
+
+
+                        <select
+                            id="bloodGroup"
+                            class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+
+                            <option value="A+">
+                                A+
+                            </option>
+
+                            <option value="A-">
+                                A-
+                            </option>
+
+                            <option value="B+">
+                                B+
+                            </option>
+
+                            <option value="B-">
+                                B-
+                            </option>
+
+                            <option value="AB+">
+                                AB+
+                            </option>
+
+                            <option value="AB-">
+                                AB-
+                            </option>
+
+                            <option value="O+" selected>
+                                O+
+                            </option>
+
+                            <option value="O-">
+                                O-
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Password -->
+
+                <div>
+
+                    <label
+                        for="password"
+                        class="block text-xs font-semibold uppercase text-slate-500 mb-1">
+
+                        Password
+
+                    </label>
+
+
+                    <div class="relative">
+
+                        <i
+                            data-lucide="lock"
+                            class="w-4 h-4 text-slate-400 absolute left-3 top-3.5">
+                        </i>
+
+
+                        <input
+                            type="password"
+                            id="password"
+                            required
+                            minlength="6"
+                            placeholder="••••••••"
+                            class="w-full border border-slate-300 rounded-lg pl-9 p-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Register Button -->
+
+                <button
+                    type="submit"
+                    id="submit-btn"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium p-2.5 rounded-lg shadow transition disabled:opacity-50 mt-2 flex items-center justify-center gap-2">
+
+                    <span>
+                        Register
+                    </span>
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- Firebase configuration generated by FastAPI/Jinja2 -->
+
+    <script
+        id="firebase-config"
+        type="application/json">{{ firebase_config_json | safe }}</script>
+
+
+
+    <!-- Firebase Registration -->
+
+    <script type="module">
+
+        // Firebase initialization
+
+        import {
+            initFirebase
+        } from "/static/js/firebase-init.js";
+
+
+        // Firebase Authentication
+
+        import {
+            createUserWithEmailAndPassword
+        } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
+
+        // Firebase Firestore
+
+        import {
+            doc,
+            setDoc
+        } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+
+
+
+        // Get Firebase configuration from the page
+
+        const configElement =
+            document.getElementById("firebase-config");
+
+
+        const config =
+            JSON.parse(configElement.textContent);
+
+
+
+        // Initialize Firebase
+
+        const {
+            auth,
+            db
+        } = initFirebase(config);
+
+
+
+        // Initialize Lucide icons
+
+        lucide.createIcons();
+
+
+
+        // Get DOM elements
+
+        const roleSelect =
+            document.getElementById("role");
+
+
+        const bloodContainer =
+            document.getElementById("blood-group-container");
+
+
+        const form =
+            document.getElementById("register-form");
+
+
+        const errorAlert =
+            document.getElementById("error-alert");
+
+
+        const errorMessage =
+            document.getElementById("error-message");
+
+
+        const submitBtn =
+            document.getElementById("submit-btn");
+
+
+
+        // Show or hide blood group based on role
+
+        roleSelect.addEventListener("change", (e) => {
+
+            if (e.target.value === "patient") {
+
+                bloodContainer.classList.remove("hidden");
+
+            } else {
+
+                bloodContainer.classList.add("hidden");
+
+            }
+
+        });
+
+
+
+        // Registration form submission
+
+        form.addEventListener("submit", async (e) => {
+
+            e.preventDefault();
+
+
+            // Hide previous error
+
+            errorAlert.classList.add("hidden");
+
+
+            // Disable button
+
+            submitBtn.disabled = true;
+
+
+            submitBtn.innerHTML = `
+                <i
+                    data-lucide="loader"
+                    class="w-4 h-4 animate-spin">
+                </i>
+                Registering...
+            `;
+
+
+            lucide.createIcons();
+
+
+
+            // Get form values
+
+            const role =
+                document.getElementById("role").value;
+
+
+            const fullName =
+                document.getElementById("fullName").value.trim();
+
+
+            const email =
+                document.getElementById("email").value.trim();
+
+
+            const phone =
+                document.getElementById("phone").value.trim();
+
+
+            const bloodGroup =
+                document.getElementById("bloodGroup").value;
+
+
+            const password =
+                document.getElementById("password").value;
+
+
+
+            try {
+
+                // Create Firebase Authentication account
+
+                const userCredential =
+                    await createUserWithEmailAndPassword(
+                        auth,
+                        email,
+                        password
+                    );
+
+
+                // Get Firebase UID
+
+                const uid =
+                    userCredential.user.uid;
+
+
+
+                // Create user profile
+
+                const userProfile = {
+
+                    uid: uid,
+
+                    fullName: fullName,
+
+                    email: email,
+
+                    phone: phone,
+
+                    role: role,
+
+                    bloodGroup:
+                        role === "patient"
+                            ? bloodGroup
+                            : null,
+
+                    createdAt:
+                        new Date().toISOString()
+
+                };
+
+
+
+                // Save profile to Firestore
+
+                await setDoc(
+                    doc(db, "users", uid),
+                    userProfile
+                );
+
+
+
+                // Registration successful
+
+                window.location.href =
+                    "/dashboard";
+
+            }
+
+
+            catch (err) {
+
+                console.error(
+                    "Registration error:",
+                    err
+                );
+
+
+                // Display error
+
+                errorMessage.textContent =
+                    err.message ||
+                    "Failed to register account.";
+
+
+                errorAlert.classList.remove("hidden");
+
+
+                // Enable button again
+
+                submitBtn.disabled = false;
+
+
+                submitBtn.innerHTML = `
+                    <span>
+                        Register
+                    </span>
+                `;
+
+
+                lucide.createIcons();
+
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Bank & Donor Finder - Clininfo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col">
+
+    <!-- Navigation Header -->
+    <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
+        <div class="flex items-center gap-3">
+            <div class="p-2.5 bg-rose-600/20 text-rose-500 rounded-xl border border-rose-500/30">
+                <i data-lucide="droplet" class="w-6 h-6 animate-pulse"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg text-white">Blood Network & Donor Portal</h1>
+                <p class="text-xs text-slate-400">Realtime Inventory & Verified Voluntary Donors</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <a href="/dashboard" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-4 py-2 rounded-xl transition flex items-center gap-2">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Dashboard
+            </a>
+            <a href="/emergency" class="text-xs bg-rose-600 hover:bg-rose-500 text-white font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-lg shadow-rose-950/50">
+                <i data-lucide="siren" class="w-4 h-4"></i> Emergency SOS
+            </a>
+        </div>
+    </header>
+
+    <main class="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6">
+
+        <!-- Search & Filter Banner -->
+        <div class="bg-gradient-to-r from-slate-900 via-rose-950/30 to-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl relative overflow-hidden">
+            <div class="max-w-3xl space-y-4 relative z-10">
+                <span class="text-xs font-bold text-rose-400 bg-rose-950/80 border border-rose-800/60 px-3 py-1 rounded-full uppercase tracking-wider">
+                    Instant Compatibility Engine
+                </span>
+                <h2 class="text-2xl font-extrabold text-white">Find Required Blood Group Near You</h2>
+                <p class="text-xs text-slate-400 leading-relaxed">Search across partner hospital blood banks and active voluntary donors in real time.</p>
+
+                <!-- Interactive Filters -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Target Blood Group</label>
+                        <select id="group-filter" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:border-rose-500 focus:outline-none transition">
+                            <option value="ALL">All Groups (A+, O+, B+, AB+, etc.)</option>
+                            <option value="A+">A Positive (A+)</option>
+                            <option value="A-">A Negative (A-)</option>
+                            <option value="B+">B Positive (B+)</option>
+                            <option value="B-">B Negative (B-)</option>
+                            <option value="O+">O Positive (O+)</option>
+                            <option value="O-">O Negative (O-) [Universal Donor]</option>
+                            <option value="AB+">AB Positive (AB+)</option>
+                            <option value="AB-">AB Negative (AB-)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Search Location / Area</label>
+                        <div class="relative">
+                            <input id="location-input" type="text" placeholder="e.g. Bandra, Andheri, Central" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-200 focus:border-rose-500 focus:outline-none transition">
+                            <i data-lucide="map-pin" class="w-4 h-4 text-slate-500 absolute left-3 top-2.5"></i>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Type</label>
+                        <select id="type-filter" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:border-rose-500 focus:outline-none transition">
+                            <option value="ALL">Show Blood Banks & Donors</option>
+                            <option value="BANK">Hospital Blood Banks Only</option>
+                            <option value="DONOR">Individual Voluntary Donors</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Controls & Statistics -->
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
+            <div class="flex items-center gap-2">
+                <button id="tab-banks-btn" class="active-tab text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 bg-rose-600 text-white">
+                    <i data-lucide="building-2" class="w-4 h-4"></i> Hospital Blood Banks
+                </button>
+                <button id="tab-donors-btn" class="text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800">
+                    <i data-lucide="users" class="w-4 h-4"></i> Voluntary Donors
+                </button>
+            </div>
+
+            <div class="flex items-center gap-4 text-xs font-mono text-slate-400">
+                <span>Verified Banks: <strong class="text-white">14</strong></span>
+                <span class="text-slate-700">|</span>
+                <span>Active Donors: <strong class="text-rose-400">182</strong></span>
+            </div>
+        </div>
+
+        <!-- Grid Container -->
+        <div id="results-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Dynamically populated via JS -->
+        </div>
+
+    </main>
+
+    <!-- Client-side Logic -->
+    <script>
+        lucide.createIcons();
+
+        // Sample datasets
+        const bloodBanks = [
+            {
+                id: "bb_1",
+                name: "City Care Central Blood Bank",
+                location: "Bandra West, Mumbai",
+                contact: "+91 98200 11223",
+                isOpen24x7: true,
+                inventory: { "A+": 18, "O+": 24, "B+": 10, "AB+": 6, "O-": 2, "A-": 4, "B-": 1, "AB-": 0 }
+            },
+            {
+                id: "bb_2",
+                name: "LifeLine Multi-Specialty Bank",
+                location: "Andheri East, Mumbai",
+                contact: "+91 98330 44556",
+                isOpen24x7: true,
+                inventory: { "A+": 8, "O+": 12, "B+": 19, "AB+": 2, "O-": 5, "A-": 0, "B-": 3, "AB-": 1 }
+            },
+            {
+                id: "bb_3",
+                name: "Apex Hospital Red Cross Unit",
+                location: "Dadar Central, Mumbai",
+                contact: "+91 98110 77889",
+                isOpen24x7: false,
+                inventory: { "A+": 30, "O+": 15, "B+": 5, "AB+": 11, "O-": 0, "A-": 2, "B-": 0, "AB-": 0 }
+            }
+        ];
+
+        const voluntaryDonors = [
+            { id: "d_1", name: "Rahul Verma", group: "O-", location: "Andheri West", lastDonated: "4 months ago", phone: "+91 98765 43210", isAvailable: true },
+            { id: "d_2", name: "Priya Sharma", group: "A+", location: "Bandra East", lastDonated: "6 months ago", phone: "+91 98123 45678", isAvailable: true },
+            { id: "d_3", name: "Amit Patel", group: "B+", location: "Dadar West", lastDonated: "2 months ago", phone: "+91 99887 76655", isAvailable: false },
+            { id: "d_4", name: "Dr. S. K. Nair", group: "AB-", location: "Kurla West", lastDonated: "5 months ago", phone: "+91 97654 32109", isAvailable: true }
+        ];
+
+        let currentTab = "BANKS";
+
+        const groupFilter = document.getElementById("group-filter");
+        const locationInput = document.getElementById("location-input");
+        const typeFilter = document.getElementById("type-filter");
+        const resultsGrid = document.getElementById("results-grid");
+
+        const tabBanksBtn = document.getElementById("tab-banks-btn");
+        const tabDonorsBtn = document.getElementById("tab-donors-btn");
+
+        function render() {
+            resultsGrid.innerHTML = "";
+            const selectedGroup = groupFilter.value;
+            const searchLoc = locationInput.value.toLowerCase().trim();
+
+            if (currentTab === "BANKS") {
+                const filtered = bloodBanks.filter(b => {
+                    const matchLoc = !searchLoc || b.location.toLowerCase().includes(searchLoc);
+                    const matchGroup = selectedGroup === "ALL" || (b.inventory[selectedGroup] && b.inventory[selectedGroup] > 0);
+                    return matchLoc && matchGroup;
+                });
+
+                if (filtered.length === 0) {
+                    resultsGrid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 text-xs">No blood banks match your current group/location filter.</div>`;
+                    return;
+                }
+
+                filtered.forEach(b => {
+                    const card = document.createElement("div");
+                    card.className = "bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between hover:border-slate-700 transition";
+                    
+                    let inventoryPills = "";
+                    Object.entries(b.inventory).forEach(([grp, count]) => {
+                        const isTarget = selectedGroup !== "ALL" && grp === selectedGroup;
+                        inventoryPills += `
+                            <div class="px-2 py-1 rounded-lg text-center ${
+                                count > 0 
+                                    ? (isTarget ? 'bg-rose-600/30 text-rose-300 border border-rose-500/60 font-bold' : 'bg-slate-800 text-slate-300 border border-slate-700/60') 
+                                    : 'bg-slate-950 text-slate-600 border border-slate-900'
+                            }">
+                                <div class="text-[10px] font-mono">${grp}</div>
+                                <div class="text-xs font-bold">${count}u</div>
+                            </div>
+                        `;
+                    });
+
+                    card.innerHTML = `
+                        <div class="space-y-3">
+                            <div class="flex items-start justify-between gap-2">
+                                <div>
+                                    <h3 class="font-bold text-sm text-slate-200">${b.name}</h3>
+                                    <p class="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
+                                        <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-500"></i> ${b.location}
+                                    </p>
+                                </div>
+                                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full ${b.isOpen24x7 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-slate-800 text-slate-400'}">
+                                    ${b.isOpen24x7 ? '24/7 OPEN' : 'LIMITED'}
+                                </span>
+                            </div>
+
+                            <div class="grid grid-cols-4 gap-1.5 pt-2">
+                                ${inventoryPills}
+                            </div>
+                        </div>
+
+                        <div class="pt-4 mt-4 border-t border-slate-800/80 flex items-center justify-between">
+                            <a href="tel:${b.contact}" class="text-xs text-rose-400 font-bold hover:underline flex items-center gap-1.5">
+                                <i data-lucide="phone" class="w-3.5 h-3.5"></i> Call Unit
+                            </a>
+                            <button class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded-xl border border-slate-700 transition">
+                                Request Units
+                            </button>
+                        </div>
+                    `;
+                    resultsGrid.appendChild(card);
+                });
+            } else {
+                const filtered = voluntaryDonors.filter(d => {
+                    const matchLoc = !searchLoc || d.location.toLowerCase().includes(searchLoc);
+                    const matchGroup = selectedGroup === "ALL" || d.group === selectedGroup;
+                    return matchLoc && matchGroup;
+                });
+
+                if (filtered.length === 0) {
+                    resultsGrid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 text-xs">No active voluntary donors match your criteria.</div>`;
+                    return;
+                }
+
+                filtered.forEach(d => {
+                    const card = document.createElement("div");
+                    card.className = "bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between hover:border-slate-700 transition";
+
+                    card.innerHTML = `
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-lg font-black text-rose-500 bg-rose-950/60 border border-rose-800/60 w-10 h-10 rounded-xl flex items-center justify-center font-mono">
+                                    ${d.group}
+                                </span>
+                                <span class="text-[10px] font-mono px-2 py-0.5 rounded-full ${d.isAvailable ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'}">
+                                    ${d.isAvailable ? 'READY TO DONATE' : 'RECENTLY DONATED'}
+                                </span>
+                            </div>
+
+                            <div>
+                                <h3 class="font-bold text-sm text-slate-200">${d.name}</h3>
+                                <p class="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
+                                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-slate-500"></i> ${d.location}
+                                </p>
+                                <p class="text-[11px] text-slate-500 mt-1 font-mono">Last Donated: ${d.lastDonated}</p>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 mt-4 border-t border-slate-800/80 flex items-center justify-between">
+                            <a href="tel:${d.phone}" class="text-xs bg-rose-600 hover:bg-rose-500 text-white font-bold px-4 py-2 rounded-xl transition flex items-center gap-1.5 w-full justify-center">
+                                <i data-lucide="phone-call" class="w-3.5 h-3.5"></i> Contact Donor Directly
+                            </a>
+                        </div>
+                    `;
+                    resultsGrid.appendChild(card);
+                });
+            }
+
+            lucide.createIcons();
+        }
+
+        // Tab Switching Logic
+        tabBanksBtn.addEventListener("click", () => {
+            currentTab = "BANKS";
+            tabBanksBtn.className = "text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 bg-rose-600 text-white";
+            tabDonorsBtn.className = "text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800";
+            render();
+        });
+
+        tabDonorsBtn.addEventListener("click", () => {
+            currentTab = "DONORS";
+            tabDonorsBtn.className = "text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 bg-rose-600 text-white";
+            tabBanksBtn.className = "text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-slate-400 border border-slate-800";
+            render();
+        });
+
+        groupFilter.addEventListener("change", render);
+        locationInput.addEventListener("input", render);
+        typeFilter.addEventListener("change", (e) => {
+            if (e.target.value === "BANK") tabBanksBtn.click();
+            if (e.target.value === "DONOR") tabDonorsBtn.click();
+        });
+
+        render();
+    </script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Clininfo - Healthcare Platform</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white border-b sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+
+            <!-- Logo -->
+            <a href="/" class="flex items-center gap-2 text-xl font-bold text-blue-600">
+                <i data-lucide="activity" class="w-6 h-6"></i>
+                <span>Clininfo</span>
+            </a>
+
+            <!-- Navigation -->
+            <div id="nav-auth-actions" class="flex items-center gap-3">
+
+                <a href="/login"
+                   class="text-sm font-medium text-slate-600 hover:text-blue-600 px-3 py-2">
+                    Sign In
+                </a>
+
+                <a href="/register"
+                   class="text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg shadow-sm">
+                    Get Started
+                </a>
+
+            </div>
+
+        </div>
+    </header>
+
+
+    <!-- Main Content -->
+    <main class="flex-1 max-w-5xl mx-auto w-full px-4 py-12 text-center">
+
+        <!-- System Status -->
+        <div class="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full mb-4">
+
+            <i data-lucide="shield-check" class="w-4 h-4"></i>
+
+            Python + FastAPI + Firebase Active
+
+        </div>
+
+
+        <!-- Heading -->
+        <h1 class="text-4xl sm:text-5xl font-extrabold text-slate-900 mb-4">
+            Smart Clinic & Emergency Management System
+        </h1>
+
+
+        <!-- Description -->
+        <p class="text-slate-600 max-w-2xl mx-auto text-lg mb-8">
+
+            Seamless patient registration, real-time appointments,
+            blood bank queries, and live emergency dispatch.
+
+        </p>
+
+
+        <!-- Firebase Status -->
+        <div id="connection-status"
+             class="max-w-md mx-auto p-4 bg-white border border-slate-200 rounded-xl shadow-sm text-sm text-slate-500 flex items-center justify-center gap-2">
+
+            <i data-lucide="loader"
+               class="w-4 h-4 animate-spin text-blue-600"></i>
+
+            <span>Connecting to Firebase...</span>
+
+        </div>
+
+    </main>
+
+
+    <!-- Firebase -->
+    <script id="firebase-config" type="application/json">
+    {{ firebase_config_json | safe }}
+</script>
+
+<script type="module">
+    import { initFirebase } from "/static/js/firebase-init.js";
+
+    // Read Firebase configuration rendered by FastAPI/Jinja2
+    const configElement = document.getElementById("firebase-config");
+
+    let config = {};
+
+    try {
+        config = JSON.parse(configElement.textContent);
+    } catch (error) {
+        console.error("Failed to parse Firebase configuration:", error);
+    }
+
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    const statusElem = document.getElementById("connection-status");
+
+    if (config && config.apiKey) {
+        try {
+            const { auth, database } = initFirebase(config);
+
+            console.log("Firebase initialized successfully");
+            console.log("Auth:", auth);
+            console.log("Database:", database);
+
+            statusElem.className =
+                "max-w-md mx-auto p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-sm text-emerald-800 font-medium flex items-center justify-center gap-2";
+
+            statusElem.innerHTML = `
+                <i data-lucide="check-circle-2"
+                   class="w-5 h-5 text-emerald-600"></i>
+                <span>Firebase Connected</span>
+            `;
+
+            lucide.createIcons();
+
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+
+            statusElem.className =
+                "max-w-md mx-auto p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800 font-medium flex items-center justify-center gap-2";
+
+            statusElem.innerHTML = `
+                <i data-lucide="alert-triangle"
+                   class="w-5 h-5 text-amber-600"></i>
+                <span>Firebase initialization failed</span>
+            `;
+
+            lucide.createIcons();
+        }
+
+    } else {
+        console.error("Firebase configuration is missing");
+
+        statusElem.className =
+            "max-w-md mx-auto p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-800 font-medium flex items-center justify-center gap-2";
+
+        statusElem.innerHTML = `
+            <i data-lucide="alert-circle"
+               class="w-5 h-5 text-red-600"></i>
+            <span>Missing Firebase configuration</span>
+        `;
+
+        lucide.createIcons();
+    }
+</script>
+
+</body>
+
+</html>

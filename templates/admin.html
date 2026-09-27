@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clininfo - Emergency Command & Admin Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="h-full bg-slate-950 text-slate-100 font-sans antialiased flex flex-col">
+
+    <!-- Top Admin Navigation Bar -->
+    <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between sticky top-0 z-40">
+        <div class="flex items-center gap-4">
+            <div class="p-2.5 bg-red-600/20 text-red-500 rounded-xl border border-red-500/30 flex items-center justify-center">
+                <i data-lucide="shield-alert" class="w-6 h-6 animate-pulse"></i>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <h1 class="font-extrabold text-lg text-white tracking-tight">Clininfo Emergency Command</h1>
+                    <span class="bg-red-500/10 text-red-400 border border-red-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">LIVE OPERATIONAL</span>
+                </div>
+                <p class="text-xs text-slate-400">Real-time Emergency Response, Ambulance Dispatch & Blood Bank Monitor</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button onclick="refreshData()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3 py-2 rounded-xl transition flex items-center gap-2">
+                <i data-lucide="refresh-cw" id="refresh-icon" class="w-3.5 h-3.5"></i> Refresh Data
+            </button>
+            <a href="/emergency" class="text-xs bg-red-600 hover:bg-red-500 text-white font-semibold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-lg shadow-red-950/50">
+                <i data-lucide="siren" class="w-4 h-4"></i> SOS Portal View
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Command Interface -->
+    <main class="flex-1 p-6 max-w-7xl mx-auto w-full space-y-6 overflow-y-auto">
+
+        <!-- Top Metrics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl flex items-center justify-between shadow-lg">
+                <div>
+                    <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Active SOS Requests</p>
+                    <h2 id="metric-active-sos" class="text-3xl font-black text-red-500 mt-1">0</h2>
+                </div>
+                <div class="p-3 bg-red-500/10 text-red-400 rounded-xl border border-red-500/20">
+                    <i data-lucide="radio-receiver" class="w-6 h-6"></i>
+                </div>
+            </div>
+
+            <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl flex items-center justify-between shadow-lg">
+                <div>
+                    <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Units Dispatched</p>
+                    <h2 id="metric-dispatched-sos" class="text-3xl font-black text-amber-400 mt-1">0</h2>
+                </div>
+                <div class="p-3 bg-amber-500/10 text-amber-400 rounded-xl border border-amber-500/20">
+                    <i data-lucide="navigation" class="w-6 h-6"></i>
+                </div>
+            </div>
+
+            <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl flex items-center justify-between shadow-lg">
+                <div>
+                    <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Available Fleet</p>
+                    <h2 id="metric-available-amb" class="text-3xl font-black text-emerald-400 mt-1">0</h2>
+                </div>
+                <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
+                    <i data-lucide="truck" class="w-6 h-6"></i>
+                </div>
+            </div>
+
+            <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl flex items-center justify-between shadow-lg">
+                <div>
+                    <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Resolved Emergencies</p>
+                    <h2 id="metric-resolved-sos" class="text-3xl font-black text-slate-300 mt-1">0</h2>
+                </div>
+                <div class="p-3 bg-slate-800 text-slate-400 rounded-xl border border-slate-700">
+                    <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Operations Layout Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Active SOS Dispatch Queue (Takes 2 Columns) -->
+            <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl flex flex-col justify-between space-y-4">
+                <div>
+                    <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-4">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="siren" class="w-5 h-5 text-red-500"></i>
+                            <h3 class="font-bold text-base text-slate-100">Live SOS Incident Queue</h3>
+                        </div>
+                        <span class="text-xs bg-slate-800 text-slate-400 border border-slate-700 px-3 py-1 rounded-full">
+                            Auto-updating
+                        </span>
+                    </div>
+
+                    <!-- SOS Incident List Container -->
+                    <div id="sos-container" class="space-y-3 max-h-[500px] overflow-y-auto pr-1">
+                        <div class="p-8 text-center text-slate-500 text-xs">Loading incident feed...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ambulance Fleet Status & Management (Takes 1 Column) -->
+            <div class="lg:col-span-1 space-y-6">
+                <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="ambulance" class="w-5 h-5 text-emerald-400"></i>
+                            <h3 class="font-bold text-base text-slate-100">Ambulance Fleet</h3>
+                        </div>
+                        <span class="text-[10px] font-mono text-slate-400">Realtime Dispatch</span>
+                    </div>
+
+                    <!-- Ambulance Fleet Container -->
+                    <div id="ambulance-container" class="space-y-3 max-h-[500px] overflow-y-auto pr-1">
+                        <div class="p-8 text-center text-slate-500 text-xs">Checking fleet status...</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Client Script handling real-time rendering & actions -->
+    <script>
+        let globalAmbulances = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            refreshData();
+            // Poll for updates every 10 seconds
+            setInterval(refreshData, 10000);
+        });
+
+        function refreshData() {
+            const icon = document.getElementById('refresh-icon');
+            if (icon) icon.classList.add('animate-spin');
+
+            fetch('/api/admin/metrics')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        renderMetrics(data.metrics.emergencies_summary, data.ambulances);
+                        globalAmbulances = data.ambulances;
+                        renderAmbulances(data.ambulances);
+                        renderEmergencies(data.emergencies);
+                    }
+                })
+                .catch(err => console.error('Error fetching admin data:', err))
+                .finally(() => {
+                    if (icon) setTimeout(() => icon.classList.remove('animate-spin'), 500);
+                });
+        }
+
+        function renderMetrics(emergenciesSummary, ambulances) {
+            document.getElementById('metric-active-sos').textContent = emergenciesSummary.active_sos || 0;
+            document.getElementById('metric-dispatched-sos').textContent = emergenciesSummary.dispatched || 0;
+            document.getElementById('metric-resolved-sos').textContent = emergenciesSummary.resolved || 0;
+            
+            const availableCount = ambulances.filter(a => a.is_available).length;
+            document.getElementById('metric-available-amb').textContent = availableCount;
+        }
+
+        function renderEmergencies(emergencies) {
+            const container = document.getElementById('sos-container');
+            if (!emergencies || emergencies.length === 0) {
+                container.innerHTML = `<div class="p-8 text-center text-slate-500 text-xs">No emergency SOS requests reported at this time.</div>`;
+                return;
+            }
+
+            container.innerHTML = emergencies.map(em => {
+                const isActive = em.status === 'active';
+                const isDispatched = em.status === 'dispatched';
+                
+                let badgeClass = 'bg-slate-800 text-slate-400 border-slate-700';
+                if (isActive) badgeClass = 'bg-red-950 text-red-400 border-red-800/80 animate-pulse';
+                if (isDispatched) badgeClass = 'bg-amber-950 text-amber-400 border-amber-800/80';
+                if (em.status === 'resolved') badgeClass = 'bg-emerald-950 text-emerald-400 border-emerald-800/80';
+
+                // Get eligible available ambulances
+                const availables = globalAmbulances.filter(a => a.is_available);
+
+                return `
+                <div class="p-4 bg-slate-950 border border-slate-800/80 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="space-y-1.5">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${badgeClass}">
+                                ${em.status}
+                            </span>
+                            <span class="text-xs font-mono text-slate-400">${em.alert_id}</span>
+                        </div>
+                        <h4 class="font-extrabold text-sm text-white">${em.patient_name} <span class="text-xs font-normal text-slate-400">(${em.phone})</span></h4>
+                        <p class="text-xs text-red-400 font-medium">${em.emergency_type} &bull; <span class="text-slate-400">Lat: ${em.latitude}, Lng: ${em.longitude}</span></p>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        ${isActive ? `
+                            <select id="select-${em.alert_id}" class="bg-slate-900 border border-slate-700 text-xs text-slate-200 rounded-xl px-3 py-2 focus:outline-none">
+                                ${availables.length === 0 ? `<option value="">No Ambulances Available</option>` : availables.map(a => `<option value="${a.ambulance_id}">${a.vehicle_number} (${a.driver_name})</option>`).join('')}
+                            </select>
+                            <button onclick="dispatchUnit('${em.alert_id}')" ${availables.length === 0 ? 'disabled' : ''} class="bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-bold text-xs px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap">
+                                <i data-lucide="send" class="w-3.5 h-3.5"></i> Dispatch
+                            </button>
+                        ` : ''}
+
+                        ${isDispatched ? `
+                            <span class="text-xs text-amber-400 font-mono bg-amber-950/40 border border-amber-900 px-3 py-1.5 rounded-xl">
+                                Assigned: ${em.assigned_ambulance_id}
+                            </span>
+                            <button onclick="resolveSOS('${em.alert_id}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-3 py-2 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap">
+                                <i data-lucide="check" class="w-3.5 h-3.5"></i> Resolve
+                            </button>
+                        ` : ''}
+
+                        ${em.status === 'resolved' ? `
+                            <span class="text-xs text-slate-500 italic">Resolved</span>
+                        ` : ''}
+                    </div>
+                </div>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+        }
+
+        function renderAmbulances(ambulances) {
+            const container = document.getElementById('ambulance-container');
+            if (!ambulances || ambulances.length === 0) {
+                container.innerHTML = `<div class="p-8 text-center text-slate-500 text-xs">No registered ambulance units found.</div>`;
+                return;
+            }
+
+            container.innerHTML = ambulances.map(amb => `
+                <div class="p-3.5 bg-slate-950 border border-slate-800/80 rounded-2xl flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-slate-800 rounded-xl ${amb.is_available ? 'text-emerald-400' : 'text-amber-400'}">
+                            <i data-lucide="truck" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <h5 class="font-bold text-xs text-white">${amb.vehicle_number}</h5>
+                            <p class="text-[11px] text-slate-400">${amb.driver_name} &bull; ${amb.driver_phone}</p>
+                        </div>
+                    </div>
+                    <span class="text-[10px] font-mono px-2.5 py-1 rounded-full border ${amb.is_available ? 'bg-emerald-950 text-emerald-400 border-emerald-800' : 'bg-amber-950 text-amber-400 border-amber-800'}">
+                        ${amb.is_available ? 'READY' : 'BUSY'}
+                    </span>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        function dispatchUnit(alertId) {
+            const selectEl = document.getElementById(`select-${alertId}`);
+            const ambulanceId = selectEl ? selectEl.value : null;
+
+            if (!ambulanceId) {
+                alert('Please select an available ambulance unit to dispatch.');
+                return;
+            }
+
+            fetch('/api/admin/dispatch', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ alert_id: alertId, ambulance_id: ambulanceId })
+            })
+            .then(res => res.json())
+            .then(() => refreshData())
+            .catch(err => alert('Failed to dispatch unit: ' + err));
+        }
+
+        function resolveSOS(alertId) {
+            fetch('/api/admin/resolve', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ alert_id: alertId })
+            })
+            .then(res => res.json())
+            .then(() => refreshData())
+            .catch(err => alert('Failed to resolve SOS: ' + err));
+        }
+    </script>
+</body>
+</html>
